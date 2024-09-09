@@ -57,8 +57,23 @@ while True:
 
         # Ensure input is consistent (84 values)
         if len(data_aux) == 84:
-            prediction = model.predict([np.asarray(data_aux)])
-            predicted_character = labels_dict[int(prediction[0])]
+            # Create a blank image of size 128x128
+            img = np.zeros((128, 128), dtype=np.float32)
+
+            # Map normalized coordinates to image
+            for i in range(0, len(data_aux), 2):  # Process in pairs (x, y)
+                x = int(data_aux[i] * 127)  # Scale to 0-127
+                y = int(data_aux[i + 1] * 127)  # Scale to 0-127
+                if 0 <= x < 128 and 0 <= y < 128:
+                    img[y, x] = 1.0  # Assign data to the image
+
+            # Resize image to 128x128 if necessary
+            img_resized = cv2.resize(img, (128, 128))
+
+            # Expand dimensions to match model input shape (1, 128, 128, 1)
+            data_array = np.expand_dims(img_resized, axis=(0, -1))
+            prediction = model.predict(data_array)
+            predicted_character = labels_dict.get(int(np.argmax(prediction[0])), "Unknown")
 
             # Drawing bounding box
             x1 = int(min(x_) * W) - 10
