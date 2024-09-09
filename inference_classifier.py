@@ -4,8 +4,8 @@ import mediapipe as mp
 import numpy as np
 
 # Load the model
-model_dict = pickle.load(open('./model.p', 'rb'))
-model = model_dict['model']
+model_dict = pickle.load(open('./cnnmodel.p', 'rb'))
+model = model_dict['Classifier']
 
 cap = cv2.VideoCapture(0)  # Change this to the correct camera index if necessary
 
